@@ -128,6 +128,6 @@ The app features:
 MIT License
 
 
-##Author
+## Author
 
 Shreyas More
