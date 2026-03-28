@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WeBlog — Create Post</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%; width: 100%;
+      font-family: 'Raleway', sans-serif;
+      background: #e8edf2;
+      overflow: hidden;
+    }
+
+    .page { display: flex; width: 100vw; height: 100vh; }
+
+    /* ── SIDEBAR (same as profile) ── */
+    .sidebar {
+      width: 300px; min-width: 300px;
+      position: relative;
+      display: flex; flex-direction: column;
+      align-items: center; overflow: hidden;
+    }
+    .sidebar::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(160deg, #26c6da 0%, #00acc1 55%, #00838f 100%);
+      z-index: 0;
+    }
+    .circle { position: absolute; border-radius: 50%; background: rgba(0,150,170,0.38); }
+    .c1 { width:300px; height:300px; top:-100px; left:-80px; }
+    .c2 { width:180px; height:180px; top:30px; left:60px; background:rgba(0,180,200,0.28); }
+    .c3 { width:220px; height:220px; bottom:-70px; right:-60px; }
+    .c4 { width:120px; height:120px; bottom:80px; left:20px; background:rgba(0,180,200,0.25); }
+    .sidebar > * { position: relative; z-index: 2; }
+
+    .sidebar-nav {
+      width: 100%; display: flex;
+      justify-content: space-between; align-items: center;
+      padding: 24px 24px 0;
+    }
+    .brand { display: flex; align-items: center; }
+    .brand-text { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+    .brand-icon { width:16px; height:16px; background:#fff; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin:0 2px; }
+    .brand-icon svg { width:7px; height:7px; margin-left:1px; }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 20px; color: #fff;
+      font-size: 10px; font-weight: 700;
+      font-family: 'Raleway', sans-serif;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 6px 14px; cursor: pointer;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+
+    .profile-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5);
+      color: #fff; cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .profile-icon svg { width: 16px; height: 16px; }
+    .profile-icon:hover { background: rgba(255,255,255,0.28); }
+
+    .avatar-wrap {
+      margin-top: 36px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .avatar-ring {
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.7);
+      padding: 3px; margin-bottom: 12px; position: relative;
+    }
+    .avatar-initial {
+      font-size: 32px; font-weight: 800; color: #fff;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; background: rgba(0,150,170,0.5);
+    }
+    .profile-name { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 3px; }
+    .profile-username { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.72); letter-spacing: 1.5px; margin-bottom: 20px; }
+
+    .stats-row {
+      display: flex; gap: 0;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      width: 100%; margin-bottom: 24px;
+    }
+    .stat { flex:1; text-align:center; padding:12px 10px; border-right:1px solid rgba(255,255,255,0.2); }
+    .stat:last-child { border-right: none; }
+    .stat strong { display:block; font-size:18px; font-weight:800; color:#fff; }
+    .stat span { font-size:9px; font-weight:700; color:rgba(255,255,255,0.7); letter-spacing:1.5px; text-transform:uppercase; }
+
+    .sidebar-menu { width: 100%; padding: 0 24px; }
+    .menu-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 16px; border-radius: 30px;
+      color: rgba(255,255,255,0.82);
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+      margin-bottom: 4px; text-decoration: none;
+    }
+    .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.2); color: #fff; }
+    .menu-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    .write-btn {
+      margin: 20px 24px 24px;
+      width: calc(100% - 48px); padding: 13px;
+      background: rgba(255,255,255,0.25);
+      border: 2px solid #fff;
+      border-radius: 30px; color: #fff;
+      font-size: 11px; font-weight: 700;
+      font-family: 'Raleway', sans-serif;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.25s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .write-btn:hover { background: rgba(255,255,255,0.35); }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1; display: flex;
+      flex-direction: column; overflow: hidden;
+      background: #f0f4f7;
+    }
+
+    /* Top bar */
+    .topbar {
+      background: #fff; padding: 18px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #e8e8e8; flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: #aaa; font-size: 10px; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      text-decoration: none; transition: color 0.2s;
+    }
+    .back-btn:hover { color: #26c6da; }
+    .back-btn svg { width: 14px; height: 14px; }
+    .divider-v { width: 1px; height: 20px; background: #e8e8e8; }
+    .topbar-title { font-size: 13px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #555; }
+
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-draft {
+      background: transparent;
+      border: 1px solid #ddd; border-radius: 20px;
+      color: #999; font-size: 10px; font-weight: 700;
+      font-family: 'Raleway', sans-serif;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 8px 18px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-draft:hover { border-color: #aaa; color: #666; }
+    .btn-publish {
+      background: #26c6da; border: none; border-radius: 20px;
+      color: #fff; font-size: 10px; font-weight: 700;
+      font-family: 'Raleway', sans-serif;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 8px 20px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-publish:hover { background: #00b8cc; box-shadow: 0 4px 14px rgba(38,198,218,0.35); }
+
+    /* Editor area */
+    .editor-wrap {
+      flex: 1; overflow-y: auto;
+      padding: 32px;
+      display: flex; gap: 24px;
+    }
+
+    /* Left: main editor */
+    .editor-main { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+
+    /* Error */
+    .alert-error {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(239,68,68,0.07);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #e05555; font-size: 11px;
+      padding: 10px 14px; border-radius: 4px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+    .field-card {
+      background: #fff;
+      border-radius: 4px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .field-label {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: #bbb; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .field-label svg { width: 12px; height: 12px; color: #26c6da; }
+    .required-dot { color: #26c6da; }
+
+    .title-input {
+      width: 100%; border: none; outline: none;
+      font-size: 22px; font-weight: 800;
+      font-family: 'Raleway', sans-serif;
+      color: #333; background: transparent;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+    .title-input:focus { border-color: #26c6da; }
+    .title-input::placeholder { color: #ddd; font-weight: 600; }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex; align-items: center; gap: 4px;
+      padding: 10px 12px;
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      border-radius: 4px 4px 0 0;
+      flex-wrap: wrap;
+    }
+    .tool-btn {
+      width: 30px; height: 30px;
+      border: none; background: transparent;
+      border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #888; font-family: 'Raleway', sans-serif;
+      font-weight: 700; font-size: 12px;
+      transition: all 0.15s;
+    }
+    .tool-btn:hover { background: #26c6da; color: #fff; }
+    .tool-btn svg { width: 14px; height: 14px; }
+    .tool-sep { width: 1px; height: 20px; background: #e8e8e8; margin: 0 4px; }
+
+    .content-area {
+      width: 100%; min-height: 280px;
+      border: 1px solid #f0f0f0; border-top: none;
+      border-radius: 0 0 4px 4px;
+      padding: 18px; outline: none;
+      font-size: 14px; font-family: 'Raleway', sans-serif;
+      color: #444; line-height: 1.8;
+      background: #fff; resize: none;
+      transition: border-color 0.2s;
+    }
+    .content-area:focus { border-color: #26c6da; }
+    .content-area::placeholder { color: #ddd; }
+
+    .char-count {
+      text-align: right; font-size: 10px;
+      color: #ccc; font-weight: 600;
+      letter-spacing: 1px; margin-top: 6px;
+    }
+
+    /* Right: sidebar options */
+    .editor-side {
+      width: 260px; min-width: 260px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .side-card {
+      background: #fff; border-radius: 4px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .side-title {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: #bbb; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .side-title svg { width: 12px; height: 12px; color: #26c6da; }
+
+    /* Category select */
+    .select-field {
+      width: 100%; padding: 9px 12px;
+      background: #fafafa;
+      border: 1px solid #ebebeb; border-radius: 4px;
+      font-size: 12px; font-family: 'Raleway', sans-serif;
+      color: #555; font-weight: 600;
+      outline: none; cursor: pointer;
+      transition: border-color 0.2s; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .select-field:focus { border-color: #26c6da; }
+
+    /* Tags input */
+    .tags-wrap {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 8px; border: 1px solid #ebebeb;
+      border-radius: 4px; min-height: 42px;
+      background: #fafafa; transition: border-color 0.2s;
+      cursor: text;
+    }
+    .tags-wrap:focus-within { border-color: #26c6da; }
+    .tag-chip {
+      background: rgba(38,198,218,0.12);
+      color: #26c6da; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.5px; padding: 3px 10px 3px 8px;
+      border-radius: 20px; display: flex; align-items: center; gap: 4px;
+    }
+    .tag-chip button {
+      background: none; border: none; cursor: pointer;
+      color: #26c6da; font-size: 13px; line-height: 1;
+      padding: 0; display: flex; align-items: center;
+    }
+    .tags-input {
+      border: none; outline: none; background: transparent;
+      font-size: 11px; font-family: 'Raleway', sans-serif;
+      color: #555; min-width: 80px; flex: 1;
+    }
+    .tags-input::placeholder { color: #ccc; }
+    .tags-hint { font-size: 9px; color: #ccc; margin-top: 6px; font-weight: 600; letter-spacing: 0.5px; }
+
+    /* Cover image upload */
+    .upload-zone {
+      border: 2px dashed #e0e0e0; border-radius: 4px;
+      padding: 20px; text-align: center;
+      cursor: pointer; transition: all 0.2s;
+      background: #fafafa;
+    }
+    .upload-zone:hover { border-color: #26c6da; background: rgba(38,198,218,0.03); }
+    .upload-zone svg { width: 28px; height: 28px; color: #ccc; margin-bottom: 8px; }
+    .upload-zone p { font-size: 10px; font-weight: 700; color: #bbb; letter-spacing: 1px; text-transform: uppercase; }
+    .upload-zone span { font-size: 9px; color: #ddd; font-weight: 600; }
+    .upload-zone input { display: none; }
+
+    /* Status toggle */
+    .status-options { display: flex; gap: 8px; }
+    .status-opt {
+      flex: 1; padding: 8px;
+      border: 1px solid #ebebeb; border-radius: 4px;
+      text-align: center; cursor: pointer;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: #bbb; transition: all 0.2s;
+    }
+    .status-opt:hover { border-color: #26c6da; color: #26c6da; }
+    .status-opt.selected { background: rgba(38,198,218,0.1); border-color: #26c6da; color: #26c6da; }
+
+    /* Scrollbar */
+    .editor-wrap::-webkit-scrollbar { width: 4px; }
+    .editor-wrap::-webkit-scrollbar-track { background: transparent; }
+    .editor-wrap::-webkit-scrollbar-thumb { background: #d5d5d5; border-radius: 2px; }
+
+    @media (max-width: 900px) {
+      html, body { overflow: auto; }
+      .page { flex-direction: column; height: auto; }
+      .sidebar { width: 100%; min-width: unset; min-height: 50vh; }
+      .editor-wrap { flex-direction: column; }
+      .editor-side { width: 100%; min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── SIDEBAR ── -->
+  <div class="sidebar">
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+    <div class="circle c3"></div>
+    <div class="circle c4"></div>
+
+    <div class="sidebar-nav">
+      <div class="brand">
+        <span class="brand-text">WEB</span>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="#26c6da"><polygon points="5,3 19,12 5,21"/></svg>
+        </div>
+        <span class="brand-text">G</span>
+      </div>
+      <div class="nav-actions">
+        <a href="{% url 'user:profile' %}" class="profile-icon" title="Profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a href="{% url 'user:logout' %}" class="logout-btn">Logout</a>
+      </div>
+    </div>
+
+    <div class="avatar-wrap">
+      <div class="avatar-ring">
+        <div class="avatar-initial">{% if user %}{{ user.name|slice:":1"|upper|default:"U" }}{% else %}U{% endif %}</div>
+      </div>
+      <p class="profile-name">{% if user %}{{ user.name }}{% else %}User{% endif %}</p>
+      <p class="profile-username">@{% if user %}{{ user.email }}{% else %}user@email.com{% endif %}</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><strong>{{ blog_count|default:"0" }}</strong><span>Posts</span></div>
+      <div class="stat"><strong>0</strong><span>Published</span></div>
+      <div class="stat"><strong>0</strong><span>Likes</span></div>
+    </div>
+
+    <nav class="sidebar-menu">
+    
+      <a href="{% url 'blog:blog_list' %}" class="menu-item">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </a>
+      <a href="{% url 'user:profile' %}" class="menu-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </a>
+      <a href="{% url 'blog:blog_create' %}" class="menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Write New Post
+      </a>
+    </nav>
+
+    <button class="write-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Write New Post
+    </button>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <a href="#" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back
+        </a>
+        <div class="divider-v"></div>
+        <span class="topbar-title">Create New Post</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-draft" onclick="setStatus('draft')">Save as Draft</button>
+        <button class="btn-publish" onclick="document.getElementById('blog-form').submit()">Publish Post</button>
+      </div>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor-wrap">
+
+      <!-- Left: main writing area -->
+      <div class="editor-main">
+
+        {% if error %}
+        <div class="alert-error">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <form id="blog-form" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="status" id="status-field" value="published"/>
+
+          <!-- Title -->
+          <div class="field-card">
+            <div class="field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+              Blog Title <span class="required-dot">*</span>
+            </div>
+            <input
+              type="text"
+              name="title"
+              class="title-input"
+              placeholder="Enter your blog title here..."
+              value="{{ form.title.value }}"
+              maxlength="200"
+              oninput="updateTitleCount(this)"
+              required
+            />
+            <div class="char-count"><span id="title-count">0</span> / 200</div>
+          </div>
+
+          <!-- Content -->
+          <div class="field-card">
+            <div class="field-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Content <span class="required-dot">*</span>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+              <button type="button" class="tool-btn" onclick="fmt('bold')" title="Bold"><b>B</b></button>
+              <button type="button" class="tool-btn" onclick="fmt('italic')" title="Italic"><i>I</i></button>
+              <button type="button" class="tool-btn" onclick="fmt('underline')" title="Underline"><u>U</u></button>
+              <div class="tool-sep"></div>
+              <button type="button" class="tool-btn" title="Heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+              </button>
+              <button type="button" class="tool-btn" onclick="fmt('insertUnorderedList')" title="Bullet list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              </button>
+              <button type="button" class="tool-btn" onclick="fmt('insertOrderedList')" title="Numbered list">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10H6"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+              </button>
+              <div class="tool-sep"></div>
+              <button type="button" class="tool-btn" onclick="fmt('createLink')" title="Insert link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </button>
+              <button type="button" class="tool-btn" onclick="fmt('justifyLeft')" title="Align left">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+              </button>
+              <button type="button" class="tool-btn" onclick="fmt('justifyCenter')" title="Center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="18" y1="18" x2="6" y2="18"/></svg>
+              </button>
+              <div class="tool-sep"></div>
+              <button type="button" class="tool-btn" onclick="fmt('undo')" title="Undo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+              </button>
+              <button type="button" class="tool-btn" onclick="fmt('redo')" title="Redo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/></svg>
+              </button>
+            </div>
+
+            <div
+              id="content-editor"
+              class="content-area"
+              contenteditable="true"
+              data-placeholder="Start writing your blog post here..."
+              oninput="syncContent()"
+            >{{ form.content.value }}</div>
+            <textarea name="content" id="content-hidden" style="display:none">{{ form.content.value|default:'' }}</textarea>
+            <div class="char-count"><span id="content-count">0</span> words</div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Right: options panel -->
+      <div class="editor-side">
+
+        <!-- Cover image -->
+        <div class="side-card">
+          <div class="side-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Cover Image
+          </div>
+          <div class="upload-zone" onclick="document.getElementById('cover-input').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            <p>Click to upload</p>
+            <span>PNG, JPG up to 5MB</span>
+            <input type="file" id="cover-input" accept="image/*" form="blog-form" name="cover_image" onchange="previewCover(this)"/>
+          </div>
+          <div id="cover-preview" style="display:none; margin-top:10px;">
+            <img id="cover-img" style="width:100%; border-radius:4px; object-fit:cover; max-height:120px;"/>
+            <button type="button" onclick="removeCover()" style="margin-top:6px; width:100%; padding:6px; background:transparent; border:1px solid #eee; border-radius:4px; font-size:9px; font-family:'Raleway',sans-serif; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#bbb; cursor:pointer;">Remove</button>
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="side-card">
+          <div class="side-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Category
+          </div>
+          <select name="category" class="select-field" form="blog-form">
+            <option value="">Select a category...</option>
+            <option value="technology">Technology</option>
+            <option value="design">Design</option>
+            <option value="lifestyle">Lifestyle</option>
+            <option value="travel">Travel</option>
+            <option value="food">Food</option>
+            <option value="health">Health & Wellness</option>
+            <option value="business">Business</option>
+            <option value="education">Education</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Tags -->
+        <div class="side-card">
+          <div class="side-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            Tags
+          </div>
+          <div class="tags-wrap" id="tags-wrap" onclick="document.getElementById('tag-input').focus()">
+            <input type="text" class="tags-input" id="tag-input" placeholder="Add tag..." onkeydown="addTag(event)"/>
+          </div>
+          <input type="hidden" name="tags" id="tags-hidden" form="blog-form"/>
+          <p class="tags-hint">Press Enter or comma to add a tag</p>
+        </div>
+
+        <!-- Status -->
+        <div class="side-card">
+          <div class="side-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Publish Status
+          </div>
+          <div class="status-options">
+            <div class="status-opt selected" id="opt-published" onclick="setStatus('published')">Published</div>
+            <div class="status-opt" id="opt-draft" onclick="setStatus('draft')">Draft</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Title char count
+  function updateTitleCount(input) {
+    document.getElementById('title-count').textContent = input.value.length;
+  }
+
+  // Sync contenteditable to hidden textarea
+  function syncContent() {
+    const editor = document.getElementById('content-editor');
+    document.getElementById('content-hidden').value = editor.innerHTML;
+    const words = editor.innerText.trim().split(/\s+/).filter(w => w).length;
+    document.getElementById('content-count').textContent = words;
+  }
+
+  // Placeholder for contenteditable
+  const editor = document.getElementById('content-editor');
+  editor.addEventListener('focus', () => editor.classList.add('focused'));
+  editor.addEventListener('blur', () => editor.classList.remove('focused'));
+
+  // Formatting commands
+  function fmt(cmd) {
+    if (cmd === 'createLink') {
+      const url = prompt('Enter URL:');
+      if (url) document.execCommand(cmd, false, url);
+    } else {
+      document.execCommand(cmd, false, null);
+    }
+    document.getElementById('content-editor').focus();
+  }
+
+  // Tags
+  const tags = [];
+  function addTag(e) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const val = e.target.value.trim().replace(/,$/, '');
+      if (val && !tags.includes(val)) {
+        tags.push(val);
+        renderTags();
+      }
+      e.target.value = '';
+    }
+  }
+  function renderTags() {
+    const wrap = document.getElementById('tags-wrap');
+    wrap.querySelectorAll('.tag-chip').forEach(el => el.remove());
+    tags.forEach((tag, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${tag}<button type="button" onclick="removeTag(${i})">×</button>`;
+      wrap.insertBefore(chip, document.getElementById('tag-input'));
+    });
+    document.getElementById('tags-hidden').value = tags.join(',');
+  }
+  function removeTag(i) {
+    tags.splice(i, 1);
+    renderTags();
+  }
+
+  // Status
+  function setStatus(val) {
+    document.getElementById('status-field').value = val;
+    document.getElementById('opt-published').classList.toggle('selected', val === 'published');
+    document.getElementById('opt-draft').classList.toggle('selected', val === 'draft');
+  }
+
+  // Cover image preview
+  function previewCover(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('cover-img').src = e.target.result;
+        document.getElementById('cover-preview').style.display = 'block';
+        document.querySelector('.upload-zone').style.display = 'none';
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+  function removeCover() {
+    document.getElementById('cover-preview').style.display = 'none';
+    document.querySelector('.upload-zone').style.display = 'block';
+    document.getElementById('cover-input').value = '';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ viewed_user.name }} - Weblog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Raleway', sans-serif; background: #f5f5f5; }
+    .page { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .circle { position: absolute; border-radius: 50%; opacity: 0.1; }
+    .c1 { width: 180px; height: 180px; background: #fff; top: -50px; left: -50px; }
+    .c2 { width: 120px; height: 120px; background: #26c6da; bottom: 10%; right: -30px; }
+    .c3 { width: 80px; height: 80px; background: #fff; bottom: 30%; left: 10px; }
+    .c4 { width: 60px; height: 60px; background: #26c6da; top: 40%; right: 10px; }
+
+    .sidebar-nav {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 22px 20px 0;
+    }
+    .brand { display: flex; align-items: center; }
+    .brand-text { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+    .brand-icon { width:15px; height:15px; background:#fff; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin:0 2px; }
+    .brand-icon svg { width:6px; height:6px; margin-left:1px; }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .profile-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5);
+      color: #fff; cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .profile-icon svg { width: 16px; height: 16px; }
+    .profile-icon:hover { background: rgba(255,255,255,0.28); }
+    .login-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5); border-radius: 20px; color: #fff; font-size: 9px; font-weight: 700; font-family: 'Raleway', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 12px; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .login-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .section-head { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 24px 20px 10px; }
+    .cat-list { padding: 0 10px; }
+    .cat-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 30px; color: rgba(255,255,255,0.85); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-bottom: 3px; text-decoration: none; }
+    .cat-item:hover, .cat-item.active { background: rgba(255,255,255,0.2); color: #fff; }
+    .cat-left { display: flex; align-items: center; gap: 10px; }
+    .cat-item svg { width: 15px; height: 15px; }
+
+    .main { flex: 1; padding: 32px 48px; overflow-y: auto; }
+    .main::-webkit-scrollbar { width: 4px; }
+    .main::-webkit-scrollbar-thumb { background: #d5d5d5; border-radius: 2px; }
+
+    .profile-header {
+      background: #fff; border-radius: 16px; padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 24px;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #26c6da, #00838f);
+      display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff;
+      margin: 0 auto 16px;
+    }
+    .profile-name { text-align: center; font-size: 24px; font-weight: 800; color: #222; margin-bottom: 4px; }
+    .profile-email { text-align: center; font-size: 14px; color: #888; margin-bottom: 20px; }
+
+    .stats-row { display: flex; justify-content: center; gap: 40px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 20px 0; }
+    .stat { text-align: center; }
+    .stat strong { display: block; font-size: 20px; font-weight: 800; color: #333; }
+    .stat span { font-size: 11px; color: #888; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+    .blogs-section { margin-top: 24px; }
+    .section-title { font-size: 18px; font-weight: 800; color: #333; margin-bottom: 20px; }
+    .blogs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .blog-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; text-decoration: none; }
+    .blog-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .blog-img { width: 100%; height: 160px; object-fit: cover; background: linear-gradient(135deg, #26c6da22, #26c6da44); }
+    .blog-info { padding: 16px; }
+    .blog-title { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .blog-meta { font-size: 12px; color: #888; }
+    .blog-category { display: inline-block; background: rgba(38,198,218,0.1); color: #26c6da; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 12px; margin-bottom: 8px; }
+    .no-blogs { text-align: center; padding: 48px; color: #888; }
+    
+    .profile-bio { font-size: 14px; color: #666; text-align: center; line-height: 1.6; margin-bottom: 16px; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .social-links { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+    .social-link {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #f5f5f5; color: #666;
+      transition: all 0.2s;
+    }
+    .social-link:hover { background: #26c6da; color: #fff; transform: translateY(-2px); }
+    .social-link svg { width: 16px; height: 16px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="sidebar">
+      <div class="circle c1"></div><div class="circle c2"></div>
+      <div class="circle c3"></div><div class="circle c4"></div>
+
+      <div class="sidebar-nav">
+        <div class="brand">
+          <span class="brand-text">WEB</span>
+          <div class="brand-icon"><svg viewBox="0 0 24 24" fill="#26c6da"><polygon points="5,3 19,12 5,21"/></svg></div>
+          <span class="brand-text">G</span>
+        </div>
+        {% if logged_in_user %}
+        <div class="nav-actions">
+          <a href="{% url 'user:profile' %}" class="profile-icon" title="Profile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+          <a href="{% url 'user:logout' %}" class="login-btn">Logout</a>
+        </div>
+        {% else %}
+        <a href="{% url 'user:login' %}" class="login-btn">Login</a>
+        {% endif %}
+      </div>
+
+      <div class="section-head">Navigation</div>
+      <div class="cat-list">
+        <a href="{% url 'blog:blog_list' %}" class="cat-item">
+          <div class="cat-left">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            All Posts
+          </div>
+        </a>
+        {% if logged_in_user %}
+        <a href="{% url 'user:profile' %}" class="cat-item">
+          <div class="cat-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Profile
+          </div>
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="profile-header">
+        {% if viewed_user.profile_pic %}
+        <div class="profile-avatar"><img src="{{ viewed_user.profile_pic.url }}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
+        {% else %}
+        <div class="profile-avatar">{{ viewed_user.name|slice:":1"|upper }}</div>
+        {% endif %}
+        <h1 class="profile-name">{{ viewed_user.name }}</h1>
+        <p class="profile-email">{{ viewed_user.email }}</p>
+        
+        {% if viewed_user.bio %}
+        <p class="profile-bio">{{ viewed_user.bio }}</p>
+        {% endif %}
+        
+        {% if viewed_user.github or viewed_user.instagram or viewed_user.facebook or viewed_user.twitter or viewed_user.linkedin or viewed_user.website %}
+        <div class="social-links">
+          {% if viewed_user.github %}<a href="{{ viewed_user.github }}" target="_blank" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>{% endif %}
+          {% if viewed_user.instagram %}<a href="{{ viewed_user.instagram }}" target="_blank" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>{% endif %}
+          {% if viewed_user.facebook %}<a href="{{ viewed_user.facebook }}" target="_blank" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>{% endif %}
+          {% if viewed_user.twitter %}<a href="{{ viewed_user.twitter }}" target="_blank" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>{% endif %}
+          {% if viewed_user.linkedin %}<a href="{{ viewed_user.linkedin }}" target="_blank" class="social-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>{% endif %}
+          {% if viewed_user.website %}<a href="{{ viewed_user.website }}" target="_blank" class="social-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></a>{% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="stats-row">
+          <div class="stat">
+            <strong>{{ blog_count }}</strong>
+            <span>Posts</span>
+          </div>
+          <div class="stat">
+            <strong>{{ total_likes }}</strong>
+            <span>Likes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="blogs-section">
+        <h2 class="section-title">Blog Posts</h2>
+        
+        {% if blogs %}
+        <div class="blogs-grid">
+          {% for blog in blogs %}
+          <a href="{% url 'blog:blog_detail' blog.id %}" class="blog-card">
+            {% if blog.img %}
+            <img src="{{ blog.img.url }}" class="blog-img" alt="{{ blog.title }}">
+            {% else %}
+            <div class="blog-img"></div>
+            {% endif %}
+            <div class="blog-info">
+              <span class="blog-category">{{ blog.category|title }}</span>
+              <h3 class="blog-title">{{ blog.title }}</h3>
+              <p class="blog-meta">{{ blog.created_at|date:"M d, Y" }}</p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-blogs">
+          <p>No blog posts yet.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

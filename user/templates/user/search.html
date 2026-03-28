@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Users - Weblog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Raleway', sans-serif; background: #f5f5f5; }
+    .page { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 260px; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .circle { position: absolute; border-radius: 50%; opacity: 0.1; }
+    .c1 { width: 180px; height: 180px; background: #fff; top: -50px; left: -50px; }
+    .c2 { width: 120px; height: 120px; background: #26c6da; bottom: 10%; right: -30px; }
+    .c3 { width: 80px; height: 80px; background: #fff; bottom: 30%; left: 10px; }
+    .c4 { width: 60px; height: 60px; background: #26c6da; top: 40%; right: 10px; }
+
+    .sidebar-nav {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 22px 20px 0;
+    }
+    .brand { display: flex; align-items: center; }
+    .brand-text { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+    .brand-icon { width:15px; height:15px; background:#fff; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin:0 2px; }
+    .brand-icon svg { width:6px; height:6px; margin-left:1px; }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .profile-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5);
+      color: #fff; cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .profile-icon svg { width: 16px; height: 16px; }
+    .profile-icon:hover { background: rgba(255,255,255,0.28); }
+    .login-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5); border-radius: 20px; color: #fff; font-size: 9px; font-weight: 700; font-family: 'Raleway', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 12px; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .login-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .sidebar-search {
+      width: calc(100% - 40px); margin: 24px 0 0;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 30px; padding: 9px 16px;
+    }
+    .sidebar-search svg { width: 13px; height: 13px; color: rgba(255,255,255,0.7); flex-shrink:0; }
+    .sidebar-search input {
+      background: transparent; border: none; outline: none;
+      color: #fff; font-size: 12px; font-weight: 600; width: 100%;
+    }
+    .sidebar-search input::placeholder { color: rgba(255,255,255,0.5); }
+
+    .section-head { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 24px 20px 10px; }
+    .cat-list { padding: 0 10px; }
+    .cat-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 30px; color: rgba(255,255,255,0.85); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-bottom: 3px; text-decoration: none; }
+    .cat-item:hover, .cat-item.active { background: rgba(255,255,255,0.2); color: #fff; }
+    .cat-left { display: flex; align-items: center; gap: 10px; }
+    .cat-item svg { width: 15px; height: 15px; }
+
+    .write-btn {
+      margin: 20px; display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: #26c6da; border-radius: 30px; color: #fff;
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 12px; text-decoration: none; transition: all 0.2s;
+    }
+    .write-btn:hover { background: #00838f; }
+
+    .main { flex: 1; padding: 32px 48px; overflow-y: auto; }
+    .main::-webkit-scrollbar { width: 4px; }
+    .main::-webkit-scrollbar-thumb { background: #d5d5d5; border-radius: 2px; }
+
+    .search-header { margin-bottom: 32px; }
+    .search-title { font-size: 24px; font-weight: 800; color: #222; margin-bottom: 8px; }
+    .search-query { font-size: 14px; color: #666; }
+
+    .users-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .user-card {
+      background: #fff; border-radius: 12px; padding: 24px; text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.2s; text-decoration: none;
+    }
+    .user-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .user-avatar {
+      width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #26c6da, #00838f);
+      display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; color: #fff;
+      margin: 0 auto 12px;
+    }
+    .user-avatar-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto 12px; }
+    .user-name { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 4px; }
+    .user-email { font-size: 12px; color: #888; }
+
+    .no-results { text-align: center; padding: 48px; color: #888; }
+    .no-results svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .no-results p { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="sidebar">
+      <div class="circle c1"></div><div class="circle c2"></div>
+      <div class="circle c3"></div><div class="circle c4"></div>
+
+      <div class="sidebar-nav">
+        <div class="brand">
+          <span class="brand-text">WEB</span>
+          <div class="brand-icon"><svg viewBox="0 0 24 24" fill="#26c6da"><polygon points="5,3 19,12 5,21"/></svg></div>
+          <span class="brand-text">G</span>
+        </div>
+        {% if logged_in_user %}
+        <div class="nav-actions">
+          <a href="{% url 'user:profile' %}" class="profile-icon" title="Profile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+          <a href="{% url 'user:logout' %}" class="login-btn">Logout</a>
+        </div>
+        {% else %}
+        <a href="{% url 'user:login' %}" class="login-btn">Login</a>
+        {% endif %}
+      </div>
+
+      <form method="GET" action="{% url 'user:search' %}" class="sidebar-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" name="q" placeholder="Search users..." value="{{ query|default:'' }}"/>
+      </form>
+
+      <div class="section-head">Navigation</div>
+      <div class="cat-list">
+        {% if logged_in_user %}
+        <a href="{% url 'user:profile' %}" class="cat-item">
+          <div class="cat-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Profile
+          </div>
+        </a>
+        {% endif %}
+        <a href="{% url 'blog:blog_list' %}" class="cat-item">
+          <div class="cat-left">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            All Posts
+          </div>
+        </a>
+      </div>
+
+      {% if logged_in_user %}
+      <a href="{% url 'blog:blog_create' %}" class="write-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Write a Post
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="main">
+      <div class="search-header">
+        <h1 class="search-title">Search Results</h1>
+        {% if query %}
+        <p class="search-query">Showing results for "{{ query }}"</p>
+        {% endif %}
+      </div>
+
+      {% if query %}
+        {% if users %}
+        <div class="users-grid">
+          {% for user in users %}
+          <a href="{% url 'user:view_user' user.id %}" class="user-card">
+            {% if user.profile_pic %}
+            <img src="{{ user.profile_pic.url }}" class="user-avatar-img" alt="{{ user.name }}">
+            {% else %}
+            <div class="user-avatar">{{ user.name|slice:":1"|upper }}</div>
+            {% endif %}
+            <div class="user-name">{{ user.name }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>No users found matching "{{ query }}"</p>
+        </div>
+        {% endif %}
+      {% else %}
+      <div class="no-results">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <p>Enter a name to search for users</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

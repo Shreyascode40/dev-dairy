@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WeBlog — {{ blog.title }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; width: 100%; font-family: 'Raleway', sans-serif; background: #f0f4f7; overflow: hidden; }
+    .page { display: flex; width: 100vw; height: 100vh; }
+
+    .sidebar { width: 260px; min-width: 260px; position: relative; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+    .sidebar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, #26c6da 0%, #00acc1 55%, #00838f 100%); z-index: 0; }
+    .circle { position: absolute; border-radius: 50%; background: rgba(0,150,170,0.38); }
+    .c1 { width:280px; height:280px; top:-90px; left:-80px; }
+    .c2 { width:170px; height:170px; top:30px; left:55px; background:rgba(0,180,200,0.26); }
+    .c3 { width:200px; height:200px; bottom:-60px; right:-50px; }
+    .c4 { width:110px; height:110px; bottom:90px; left:18px; background:rgba(0,180,200,0.22); }
+    .sidebar > * { position: relative; z-index: 2; }
+
+    .sidebar-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 22px 20px 0; }
+    .brand { display: flex; align-items: center; }
+    .brand-text { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+    .brand-icon { width:15px; height:15px; background:#fff; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin:0 2px; }
+    .brand-icon svg { width:6px; height:6px; margin-left:1px; }
+
+    .login-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5); border-radius: 20px; color: #fff; font-size: 9px; font-weight: 700; font-family: 'Raleway', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 12px; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .login-btn:hover { background: rgba(255,255,255,0.28); }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+
+    .profile-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5);
+      color: #fff; cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .profile-icon svg { width: 16px; height: 16px; }
+    .profile-icon:hover { background: rgba(255,255,255,0.28); }
+
+    .sidebar-menu { width: 100%; padding: 20px; }
+    .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 30px; color: rgba(255,255,255,0.85); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; margin-bottom: 3px; text-decoration: none; }
+    .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.2); color: #fff; }
+    .menu-item svg { width: 15px; height: 15px; }
+
+    .back-btn { margin: 20px; display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.8); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; }
+    .back-btn:hover { color: #fff; }
+    .back-btn svg { width: 12px; height: 12px; }
+
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { background: #fff; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e8e8e8; flex-shrink: 0; }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .tab { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #ccc; cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; transition: all 0.2s; text-decoration: none; }
+    .tab:hover, .tab.active { color: #26c6da; border-bottom-color: #26c6da; }
+
+    .content { flex: 1; overflow-y: auto; padding: 32px 48px; }
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-thumb { background: #d5d5d5; border-radius: 2px; }
+
+    .blog-header { margin-bottom: 32px; }
+    .blog-category { display: inline-flex; align-items: center; gap: 6px; background: rgba(38,198,218,0.1); color: #26c6da; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; }
+    .blog-title { font-size: 32px; font-weight: 800; color: #222; line-height: 1.3; margin-bottom: 20px; }
+    .blog-meta { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
+    .author-row { display: flex; align-items: center; gap: 12px; }
+    .author-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #26c6da, #00838f); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #fff; }
+    .author-avatar-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+    .author-info .author-name { font-size: 13px; font-weight: 700; color: #444; }
+    .author-info .author-date { font-size: 11px; color: #bbb; font-weight: 600; }
+    .blog-stats { display: flex; gap: 16px; align-items: center; }
+    .blog-stats span { font-size: 11px; color: #888; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .blog-stats svg { width: 14px; height: 14px; }
+
+    .like-comment-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid #eee; }
+    .action-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px; background: #f5f5f5; color: #666; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+    .action-btn:hover { background: #eee; }
+    .action-btn.liked { background: #ffebee; color: #e53935; }
+    .action-btn.liked svg { fill: #e53935; }
+    .action-btn svg { width: 16px; height: 16px; }
+
+    .comments-section { margin-top: 32px; padding-top: 32px; border-top: 1px solid #eee; }
+    .comments-title { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 20px; }
+    .comment-form { display: flex; gap: 12px; margin-bottom: 24px; }
+    .comment-input { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 24px; font-size: 13px; outline: none; transition: border-color 0.2s; }
+    .comment-input:focus { border-color: #26c6da; }
+    .comment-submit { padding: 12px 20px; background: #26c6da; color: #fff; border: none; border-radius: 24px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+    .comment-submit:hover { background: #00838f; }
+    .comment-list { display: flex; flex-direction: column; gap: 16px; }
+    .comment-item { display: flex; gap: 12px; }
+    .comment-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #26c6da, #00838f); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .comment-content { flex: 1; }
+    .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .comment-author { font-size: 13px; font-weight: 700; color: #333; }
+    .comment-date { font-size: 11px; color: #aaa; }
+    .comment-text { font-size: 13px; color: #555; line-height: 1.5; }
+
+    {% if blog.img %}
+    .blog-cover { width: 100%; max-height: 400px; object-fit: cover; border-radius: 4px; margin-bottom: 32px; }
+    {% endif %}
+
+    .blog-content { font-size: 16px; color: #444; line-height: 1.9; }
+    .blog-content p { margin-bottom: 20px; }
+
+    @media (max-width: 900px) {
+      html, body { overflow: auto; }
+      .page { flex-direction: column; height: auto; }
+      .sidebar { width: 100%; min-width: unset; min-height: auto; padding-bottom: 20px; }
+      .main { min-height: 60vh; }
+      .content { padding: 24px 20px; }
+      .blog-title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="sidebar">
+    <div class="circle c1"></div><div class="circle c2"></div>
+    <div class="circle c3"></div><div class="circle c4"></div>
+
+    <div class="sidebar-nav">
+      <div class="brand">
+        <span class="brand-text">WEB</span>
+        <div class="brand-icon"><svg viewBox="0 0 24 24" fill="#26c6da"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <span class="brand-text">G</span>
+      </div>
+      {% if logged_in_user %}
+      <div class="nav-actions">
+        <a href="{% url 'user:profile' %}" class="profile-icon" title="Profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <a href="{% url 'user:logout' %}" class="login-btn">Logout</a>
+      </div>
+      {% else %}
+      <a href="{% url 'user:login' %}" class="login-btn">Login</a>
+      {% endif %}
+    </div>
+
+    <a href="{% url 'blog:blog_list' %}" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Home
+    </a>
+
+    <nav class="sidebar-menu">
+      {% if logged_in_user %}
+      <a href="{% url 'user:profile' %}" class="menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </a>
+      <a href="{% url 'blog:blog_create' %}" class="menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Create Blog
+      </a>
+      {% else %}
+      <a href="{% url 'user:login' %}" class="menu-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Login
+      </a>
+      {% endif %}
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <a href="{% url 'blog:blog_list' %}" class="tab">Home</a>
+        <a href="{% url 'blog:blog_list' %}?tab=latest" class="tab">Latest</a>
+        <a href="{% url 'blog:blog_list' %}?tab=popular" class="tab">Popular</a>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="blog-header">
+        <span class="blog-category">{{ blog.category|title }}</span>
+        <h1 class="blog-title">{{ blog.title }}</h1>
+        <div class="blog-meta">
+          <div class="author-row">
+            {% if blog.author_profile_pic %}
+            <img src="{{ blog.author_profile_pic }}" class="author-avatar-img" alt="{{ blog.display_author }}">
+            {% else %}
+            <div class="author-avatar">{{ blog.display_author|slice:":1"|upper }}</div>
+            {% endif %}
+            <div class="author-info">
+              <div class="author-name">{{ blog.display_author }}</div>
+              <div class="author-date">{{ blog.created_at|date:"M d, Y" }}</div>
+            </div>
+          </div>
+          <div class="blog-stats">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              {{ blog.views }} views
+            </span>
+            <span class="like-count" id="like-count">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              {{ blog.like_count }} likes
+            </span>
+            <span class="comment-count">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              {{ blog.comment_count }} comments
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {% if blog.img %}
+      <img src="{{ blog.img.url }}" class="blog-cover" alt="{{ blog.title }}"/>
+      {% endif %}
+
+      <div class="blog-content">
+        {{ blog.content|safe }}
+      </div>
+
+      <div class="like-comment-actions">
+        {% if logged_in_user %}
+        <button class="action-btn {% if user_liked %}liked{% endif %}" id="like-btn" data-blog-id="{{ blog.id }}">
+          <svg viewBox="0 0 24 24" fill="{% if user_liked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span id="like-text">{% if user_liked %}Liked{% else %}Like{% endif %}</span>
+        </button>
+        {% else %}
+        <a href="{% url 'user:login' %}" class="action-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Like
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="comments-section">
+        <h3 class="comments-title">Comments ({{ blog.comment_count }})</h3>
+        
+        {% if logged_in_user %}
+        <form class="comment-form" id="comment-form" data-blog-id="{{ blog.id }}">
+          <input type="text" class="comment-input" id="comment-input" placeholder="Write a comment..." required>
+          <button type="submit" class="comment-submit">Post</button>
+        </form>
+        {% else %}
+        <p style="margin-bottom: 20px; color: #888; font-size: 13px;"><a href="{% url 'user:login' %}" style="color: #26c6da;">Login</a> to write a comment</p>
+        {% endif %}
+
+        <div class="comment-list" id="comment-list">
+          {% for comment in comments %}
+          <div class="comment-item">
+            <div class="comment-avatar">{{ comment.user.name|slice:":1"|upper|default:"U" }}</div>
+            <div class="comment-content">
+              <div class="comment-header">
+                <span class="comment-author">{{ comment.user.name }}</span>
+                <span class="comment-date">{{ comment.created_at|date:"M d, Y" }}</span>
+              </div>
+              <p class="comment-text">{{ comment.content }}</p>
+            </div>
+          </div>
+          {% empty %}
+          <p style="color: #aaa; font-size: 13px;" id="no-comments">No comments yet. Be the first to comment!</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const csrftoken = getCookie('csrftoken');
+  
+  const likeBtn = document.getElementById('like-btn');
+  if (likeBtn) {
+    likeBtn.addEventListener('click', function() {
+      const blogId = this.dataset.blogId;
+      fetch(`/blog/${blogId}/like/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+        const likeCountSpan = document.querySelector('.like-count');
+        likeCountSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> ${data.like_count} likes`;
+        
+        const likeText = document.getElementById('like-text');
+        const svg = likeBtn.querySelector('svg');
+        if (data.liked) {
+          likeBtn.classList.add('liked');
+          likeText.textContent = 'Liked';
+          svg.setAttribute('fill', 'currentColor');
+        } else {
+          likeBtn.classList.remove('liked');
+          likeText.textContent = 'Like';
+          svg.setAttribute('fill', 'none');
+        }
+      });
+    });
+  }
+
+  const commentForm = document.getElementById('comment-form');
+  if (commentForm) {
+    commentForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const blogId = this.dataset.blogId;
+      const commentInput = document.getElementById('comment-input');
+      const content = commentInput.value.trim();
+      
+      if (!content) return;
+
+      const formData = new FormData();
+      formData.append('content', content);
+
+      fetch(`/blog/${blogId}/comment/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+        },
+        body: formData,
+        credentials: 'same-origin'
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          return;
+        }
+        
+        const commentList = document.getElementById('comment-list');
+        const noComments = document.getElementById('no-comments');
+        if (noComments) noComments.remove();
+
+        const commentItem = document.createElement('div');
+        commentItem.className = 'comment-item';
+        commentItem.innerHTML = `
+          <div class="comment-avatar">${data.comment.user_name.charAt(0).toUpperCase()}</div>
+          <div class="comment-content">
+            <div class="comment-header">
+              <span class="comment-author">${data.comment.user_name}</span>
+              <span class="comment-date">${data.comment.created_at}</span>
+            </div>
+            <p class="comment-text">${data.comment.content}</p>
+          </div>
+        `;
+        commentList.insertBefore(commentItem, commentList.firstChild);
+
+        const commentsTitle = document.querySelector('.comments-title');
+        commentsTitle.textContent = `Comments (${data.comment_count})`;
+
+        const commentCountSpan = document.querySelector('.comment-count');
+        commentCountSpan.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> ${data.comment_count} comments`;
+
+        commentInput.value = '';
+      });
+    });
+  }
+});
+</script>
+</body>
+</html>
