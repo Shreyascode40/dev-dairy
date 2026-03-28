@@ -34,7 +34,7 @@ A modern blog platform built with Django where users can create profiles, write 
 ## Tech Stack
 
 - **Backend**: Django 5.2
-- **Database**: SQLite
+- **Database**: Postgresql
 - **Frontend**: HTML, CSS, JavaScript
 - **Icons**: SVG
 
@@ -126,3 +126,8 @@ The app features:
 ## License
 
 MIT License
+
+
+## Author
+
+Shreyas More
