@@ -126,3 +126,8 @@ The app features:
 ## License
 
 MIT License
+
+
+##Author
+
+Shreyas More
