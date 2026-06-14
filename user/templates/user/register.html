@@ -363,6 +363,7 @@
       <p class="form-title">Create your account</p>
 
       <form class="form-wrap" method="POST" action="{% url 'user:register' %}">
+        {% csrf_token %}
 
         {% if error %}
         <div class="alert-error">

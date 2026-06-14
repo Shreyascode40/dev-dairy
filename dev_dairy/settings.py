@@ -10,6 +10,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='.vercel.app,.onrender.com,localhost,127.0.0.1', cast=Csv())
 
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://*.vercel.app,https://*.onrender.com,http://localhost:8000,http://127.0.0.1:8000', cast=Csv())
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
