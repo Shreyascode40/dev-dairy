@@ -162,7 +162,7 @@
                 {% if user.profile_pic %}
                 <img src="{{ user.profile_pic.url }}" alt="Profile Picture" id="preview-img">
                 {% else %}
-                <div class="pic-placeholder" id="pic-placeholder">{{ user.name|slice:"|upper" }}</div>
+                <div class="pic-placeholder" id="pic-placeholder">{{ user.name|slice:":1"|upper }}</div>
                 {% endif %}
               </div>
               <label for="profile-pic-input" class="pic-upload-btn">Choose Photo</label>

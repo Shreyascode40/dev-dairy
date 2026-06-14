@@ -21,6 +21,15 @@ db.sqlite3-journal
 *.swp
 *.swo
 
+# Environment
+.env
+.env.*
+!.env.example
+
+# Static files (collected for production)
+staticfiles/
+
 # OS
 .DS_Store
 Thumbs.db
+nul

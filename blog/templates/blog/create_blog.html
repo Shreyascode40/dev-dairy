@@ -416,12 +416,12 @@
       </a>
     </nav>
 
-    <button class="write-btn">
+    <a href="{% url 'blog:blog_create' %}" class="write-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
       Write New Post
-    </button>
+    </a>
   </div>
 
   <!-- ── MAIN ── -->
@@ -477,7 +477,7 @@
               name="title"
               class="title-input"
               placeholder="Enter your blog title here..."
-              value="{{ form.title.value }}"
+              value=""
               maxlength="200"
               oninput="updateTitleCount(this)"
               required
@@ -532,8 +532,8 @@
               contenteditable="true"
               data-placeholder="Start writing your blog post here..."
               oninput="syncContent()"
-            >{{ form.content.value }}</div>
-            <textarea name="content" id="content-hidden" style="display:none">{{ form.content.value|default:'' }}</textarea>
+            ></div>
+            <textarea name="content" id="content-hidden" style="display:none"></textarea>
             <div class="char-count"><span id="content-count">0</span> words</div>
           </div>
 

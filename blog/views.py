@@ -120,7 +120,10 @@ def blog_detail(request, blog_id):
     
     if blog.created_by:
         blog.display_author = blog.created_by.name or 'Anonymous'
-        blog.author_profile_pic = blog.created_by.profile_pic.url if blog.created_by.profile_pic else None
+        try:
+            blog.author_profile_pic = blog.created_by.profile_pic.url if blog.created_by.profile_pic else None
+        except Exception:
+            blog.author_profile_pic = None
     else:
         blog.display_author = 'Anonymous'
         blog.author_profile_pic = None
